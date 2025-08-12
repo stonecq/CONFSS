@@ -15,13 +15,13 @@ class FakeNewsDetector(nn.Module):
         self.comments_emotion_dim = comments_emotion_dim
         self.class_num = class_num
 
-        # 新闻
+        # news
         self.news_embedding = nn.Embedding.from_pretrained(
             torch.FloatTensor(embedding_matrix)
         )
         self.news_text_att = TextAttention(self.embed_dim, news_hidden_dim)
 
-        # 评论
+        # comment
         self.comment_hidden_dim = comments_hidden_dim
         self.comment_embedding = nn.Embedding.from_pretrained(
             torch.FloatTensor(embedding_matrix)
@@ -30,9 +30,9 @@ class FakeNewsDetector(nn.Module):
         self.comments_mlp = nn.Linear(2*comments_hidden_dim + comments_emotion_dim, combined_comment_mlp_dim)
         self.comments_means = CommentsMeans(mlp_dim=combined_comment_mlp_dim, num_clusters=num_clusters)
 
-        # 更新分类器
+        # classifier
         self.classifier = nn.Sequential(
-            nn.Linear(2*news_hidden_dim + num_clusters * combined_comment_mlp_dim, 512),  # 新闻特征 + 聚类特征
+            nn.Linear(2*news_hidden_dim + num_clusters * combined_comment_mlp_dim, 512),  # news_feature + cluster_feature
             nn.ReLU(),
             nn.Dropout(0.5),
             nn.Linear(512, class_num)
@@ -40,16 +40,16 @@ class FakeNewsDetector(nn.Module):
 
     def forward(self, news_input=None, comment_input=None, comments_mask_input=None, comment_emotion=None):
         """
-        输入维度说明:
+        input dim:
         - news_input:       [batch_size, news_len]
         - comment_input:    [batch_size, num_comments, comment_len]
         - comment_emotion:  [batch_size, num_comments, emotion_dim]
         """
 
-        # 新闻编码
+        # news_encode
         news_emb = self.news_embedding(news_input)  # [B, N_L, E]
         news_out, news_att_wei = self.news_text_att(news_emb)  # [B, 2H]
-        # 评论编码
+        # comment_encode
         B, N_C, C_L = comment_input.shape
         comments_flat = comment_input.view(B * N_C, C_L)  # [B*N_C, C_L]
         comments_emb = self.comment_embedding(comments_flat) # [B*N_C, C_L, E]
@@ -60,12 +60,12 @@ class FakeNewsDetector(nn.Module):
             comments_out,  # [B, N_C, 2H]
             comment_emotion.unsqueeze(2)  # [B, N_C, emotion_dim]
         ], dim=2)  # [B, N_C, 2H+emotion_dim]
-        # 聚类特征
+        # cluster_feature
         combined_comment_feat = self.comments_mlp(combined_comment_feat)
         cluster_assign, cluster_feat = self.comments_means(combined_comment_feat, comments_mask_input) # [B, K, mlp_dim]
-        # 展平聚类特征
+
         cluster_feat = cluster_feat.view(cluster_feat.size(0), -1)  # [B, 5 * 256]
-        # 特征融合
+        # combine feature
         combined = torch.cat([news_out, cluster_feat], dim=1)
         return self.classifier(combined), combined_comment_feat, cluster_assign, self.comments_means.cluster.cluster_centers
 
@@ -96,7 +96,7 @@ class TextAttention(nn.Module):
 
     def forward(self, x):
         """
-        输入维度说明:
+        input dim:
         :param x: [batch_size, len, embedding_dim]
         """
         x, _ = self.BiGru(x) # [B, L, 2H]
@@ -115,7 +115,7 @@ class SelfAttention(nn.Module):
 
     def forward(self, hidden_states):
         """
-        输入输出维度:
+        input and output dim:
         - hidden_states: [batch, seq_len, hidden_dim]
         - return:        [batch, hidden_dim]
         """

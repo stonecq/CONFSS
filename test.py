@@ -27,7 +27,7 @@ if __name__ == '__main__':
         name = dataset['name']
         print('#'*60)
         print('#'*60)
-        print(f'数据集 {name} 开始测试')
+        print(f'dataset {name} is testing')
         config = Config(dataset['class_num'], dataset['embedding_dim'])
 
         dataset_dir = os.path.join(DATA_DIR, dataset['name'])

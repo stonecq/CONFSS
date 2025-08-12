@@ -22,28 +22,26 @@ class NewsCommentDataset(Dataset):
 
 
 def collate_fn(batch):
-    # 解压批次数据
     news, comments, emotions, labels = zip(*batch)
 
-    max_comments = max(len(c) for c in comments)  # 动态适应不同batch
+    max_comments = max(len(c) for c in comments)
     max_comment_len = max(c.shape[-1] for com in comments for c in com)
 
-    # --- 评论数据填充 ---
+    # --- comment pad ---
     padded_comments = []
     comment_masks = []
 
-    for comment_list in comments:  # 每个新闻的评论列表
-        # 截断/填充评论数量到max_comments
+    for comment_list in comments:
+        # Truncate/pad the number of comments to max_comments
         truncated_comments = comment_list[:max_comments]
         padding_needed = max(0, max_comments - len(truncated_comments))
 
-        # 填充到max_comments
         padded = torch.cat([
             truncated_comments,
             torch.zeros(padding_needed, max_comment_len, dtype=torch.long)
         ], dim=0)  # [max_comments, max_comment_len]
 
-        # 生成评论级注意力掩码
+        # generate comment-level attention masks
         mask = torch.cat([
             torch.ones(len(truncated_comments), dtype=torch.bool),
             torch.zeros(padding_needed, dtype=torch.bool)
@@ -55,7 +53,7 @@ def collate_fn(batch):
     comments_tensor = torch.stack(padded_comments)  # [batch, max_comments, max_len]
     comment_masks = torch.stack(comment_masks)  # [batch, max_comments]
 
-    # --- 情感数据填充 ---
+    # --- emotion pad ---
     padded_emotions = []
     for emotion_list in emotions:
         truncated_emotions = emotion_list[:max_comments]
@@ -70,7 +68,6 @@ def collate_fn(batch):
 
     emotions_tensor = torch.stack(padded_emotions)  # [batch, max_comments, emotion_dim]
 
-    # --- 其他数据 ---
     news_tensor = torch.stack(news)  # [batch, news_len]
     labels_tensor = torch.tensor(labels, dtype=torch.long)
 

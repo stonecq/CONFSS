@@ -41,7 +41,7 @@ if __name__ == '__main__':
         name = dataset['name']
         print('#'*60)
         print('#'*60)
-        print(f'数据集 {name} 开始训练')
+        print(f'dataset {name} is training')
         config = Config(dataset['class_num'], dataset['embedding_dim'])
 
         dataset_dir = os.path.join(DATA_DIR, dataset['name'])
@@ -58,11 +58,10 @@ if __name__ == '__main__':
                     embedding_path=dataset['embedding_path'],
                     saved_dir=SAVED_MODEL_DIR
                     )
-        print(f'数据集 {name} 训练结束')
+        print(f'dataset {name} train has been end')
         print("\n")
-        # 训练完第一个数据集后
-        del model  # 删除模型
-        del train_data, val_data, test_data  # 删除数据集
-        torch.cuda.empty_cache()  # 清空 GPU 缓存（如果使用 GPU）
-        gc.collect()  # 触发垃圾回收
+        del model
+        del train_data, val_data, test_data
+        torch.cuda.empty_cache()
+        gc.collect()
 

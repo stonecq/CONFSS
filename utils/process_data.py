@@ -15,7 +15,6 @@ def load_data(data_dir):
     return map(load_json, data_paths)
 
 def load_stop_words(file_path):
-    """从txt文件加载停用词"""
     stopwords = set()
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -30,39 +29,28 @@ def load_stop_words(file_path):
 
 def split_dataset(dataset, split_rate, random_seed=None):
     """
-    将数据集按比例划分为训练集、验证集和测试集
-
-    参数:
-        dataset (list/np.ndarray): 输入数据集
-        split_rate (list): 划分比例，如[8,1,1]代表比例8:1:1
-        random_seed (int): 随机种子，保证可重复性
-
-    返回:
-        train, val, test: 划分后的三个数据集，类型与输入一致
+    Split the dataset into training set, validation set, and test set according to a proportion
+    Parameters:
+    dataset (list/np.ndarray): Input dataset
+    split_rate (list): Split proportion, e.g., [8,1,1] represents the ratio 8:1:1
+    random_seed (int): Random seed to ensure reproducibility
+    Returns:
+    train, val, test: The three split datasets, with the same type as the input
     """
-    # 检查参数合法性
-    if len(split_rate) != 3:
-        raise ValueError("split_rate必须包含3个元素")
-    if sum(split_rate) <= 0:
-        raise ValueError("比例数值需大于0")
 
-    # 设置随机种子
+    # random seed
     if random_seed is not None:
         np.random.seed(random_seed)
 
-    # 计算实际比例
     total = sum(split_rate)
     train_ratio, val_ratio, _ = [r / total for r in split_rate]
 
-    # 生成随机索引
     n = len(dataset)
     indices = np.random.permutation(n)
 
-    # 计算划分位置
     train_end = int(n * train_ratio)
     val_end = train_end + int(n * val_ratio)
 
-    # 提取数据
     def get_data(indices):
         if isinstance(dataset, np.ndarray):
             return dataset[indices]
@@ -86,9 +74,7 @@ class DataProcessor:
             return self._preprocess_en_text(text)
 
     def _preprocess_cn_text(self, text):
-        # 分词
         words = jieba.cut(text)
-        # 去停用词
         clean_words = [
             word.strip() for word in words
             if (word not in self.stop_words) and (not word.isspace())
@@ -97,9 +83,7 @@ class DataProcessor:
 
     def _preprocess_en_text(self, text):
         text = text.lower()
-        # 分词
         words = nltk.word_tokenize(text)
-        # 去停用词
         clean_words = [
             word.strip() for word in words
             if (word not in self.stop_words) and (not word.isspace())

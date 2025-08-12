@@ -1,5 +1,5 @@
 class Config(object):
-    """配置参数"""
+    """Configuration Parameters"""
 
     def __init__(self,class_num, embedding_dim):
         self.class_num = class_num

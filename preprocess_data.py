@@ -24,14 +24,13 @@ stop_words = {
 if __name__ == "__main__":
     for dataset in datasets:
         print('*'*30)
-        print(f"正在处理数据集{dataset['name']}")
+        print(f"processing dataset {dataset['name']}")
         save_data = []
         data_processor = DataProcessor(stop_words[dataset['language']], dataset['language'])
 
         with open(dataset['data_path'], 'r') as f:
             data = json.load(f)
 
-            # 遍历每一条新闻
             for key in tqdm(data.keys()):
                 value = data[key]
                 comments = value['comments']
@@ -42,7 +41,6 @@ if __name__ == "__main__":
                 save_news_content = data_processor.preprocess_text(value['news_content'])
                 save_comments = []
                 save_emotions = []
-                # 遍历每一条评论
                 for comment in comments:
                     if dataset['language'] == 'chinese':
                         emotion =  comment['emotion']["confidence"]['positive']
