@@ -13,9 +13,9 @@
 you can download the embedding files as the following table:
 
 | **embedding file** | **link** |
-| --- | --- |
-| glove.6B.100d | [https://nlp.stanford.edu/projects/glove/](https://nlp.stanford.edu/projects/glove/) |
-| sgns.weibo.word | [https://nlp.stanford.edu/projects/glove/](https://nlp.stanford.edu/projects/glove/) |
+|--------------------| --- |
+| glove.42B.300d     | [https://nlp.stanford.edu/projects/glove/](https://nlp.stanford.edu/projects/glove/) |
+| sgns.weibo.word    | [https://github.com/Embedding/Chinese-Word-Vectors.git](https://nlp.stanford.edu/projects/glove/) |
 
 
 <font style="color:rgb(31, 35, 40);">After downloading the </font>**embedding file**<font style="color:rgb(31, 35, 40);">, please ensure to place it in the appropriate folder as demonstrated below:</font>
@@ -23,7 +23,7 @@ you can download the embedding files as the following table:
 ```bash
 -resource
    --embedding
-     ---glove.6B.100d.txt
+     ---glove.42B.300d.txt
      ---sgns.weibo.word
        ----sgns.weibo.word
 ```

@@ -15,11 +15,12 @@ SAVE_DIR = 'saved'
 datasets = [
     {"name":'r-19',
      'language':'english',
-     'embedding_path':'resource/embedding/glove.6B.100d.txt',
-     'embedding_dim': 100,
+     'embedding_path':'resource/embedding/glove.42B.300d.txt',
+     'embedding_dim': 300,
      'class_num':3,
-     'batch_size':4,
-     'epochs':20
+     'batch_size':8,
+     'epochs':20,
+     'lr':5e-4
     },
     {"name":'weibo',
      'language':'chinese',
@@ -27,7 +28,8 @@ datasets = [
      'embedding_dim': 300,
      'batch_size':8,
      'class_num':2,
-     'epochs':20
+     'epochs':20,
+     'lr':1e-3
     }
 ]
 

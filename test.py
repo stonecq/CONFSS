@@ -16,8 +16,8 @@ datasets = [
     },
     {"name":'r-19',
      'language':'english',
-     'embedding_path':'resource/embedding/glove.6B.100d.txt',
-     'embedding_dim': 100,
+     'embedding_path':'resource/embedding/glove.42B.300d.txt',
+     'embedding_dim': 300,
      'class_num':3
     }
 ]
@@ -35,5 +35,5 @@ if __name__ == '__main__':
 
         train_data, val_data, test_data = load_data(dataset_dir)
         model = MyModel(config)
-        model.load_model(model_path=os.path.join(model_dir,'best_model.pth'))
+        model.load_model(model_path=os.path.join(model_dir,'best_model.pth_3_0.05'))
         model.test(test_data)
